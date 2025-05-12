@@ -197,6 +197,8 @@ Tarjetas de memoria: SD, microSD; usadas en cámaras, móviles.
 Una computadora es un dispositivo electrónico que recibe datos, los procesa y entrega resultados. Ejecuta instrucciones mediante programas y realiza tareas de manera automática y precisa.
 
 🔧 Componentes fundamentales:
+![image](https://github.com/user-attachments/assets/fc4e91b1-4849-4cbb-b16e-847f0383b020)
+
 ![image](https://github.com/user-attachments/assets/2a73a81d-76ee-49ea-a820-4645af3977be)
 
 # 2. ¿Qué es el CPU?
@@ -792,3 +794,536 @@ Aumenta la velocidad de transferencia (acceso directo).
 Permite paralelismo: CPU trabaja mientras el DMA transfiere.
 
 Mejora la eficiencia y rendimiento general del sistema.
+
+
+# Unidad Temática II - Procesos
+
+## Contenidos
+
+---
+
+### a) Procesos
+
+#### Definición
+Un **proceso** es un programa en ejecución. Incluye el código del programa, su estado actual (valores de los registros, contador de programa, etc.), pila y datos asociados.
+
+#### Modelo de Procesos
+Un proceso puede representarse mediante un **modelo de cinco estados**:
+- **Nuevo:** El proceso está siendo creado.
+- **Listo:** El proceso está esperando ser asignado al procesador.
+- **Ejecución:** El proceso está usando la CPU.
+- **Bloqueado (Espera):** El proceso espera un evento externo (como E/S).
+- **Terminado:** El proceso ha finalizado su ejecución.
+
+#### Jerarquía de Procesos
+- Los sistemas operativos pueden organizar procesos en una jerarquía.
+- **Proceso padre**: crea uno o más **procesos hijos**.
+- Los procesos hijos pueden heredar recursos del padre.
+- Se utilizan llamadas como `fork()`, `exec()` y `wait()` en sistemas tipo UNIX.
+
+#### Implantación y Operación sobre Procesos
+**Implantación:**  
+- Requiere estructuras como el **PCB (Process Control Block)** que guarda información del proceso (estado, registros, identificador, etc.).
+
+**Operaciones:**
+- **Crear:** `fork()`, `CreateProcess()`
+- **Ejecutar:** `exec()`, `start()`
+- **Esperar:** `wait()`
+- **Finalizar:** `exit()`, `kill()`
+
+#### Procesos e Hilos
+- **Proceso:** tiene su propio espacio de memoria y recursos.
+- **Hilo (Thread):** unidad ligera de ejecución dentro de un proceso.
+- Los hilos comparten espacio de direcciones, archivos abiertos, etc.
+- Ventaja: menor costo de creación y cambio de contexto.
+
+---
+
+### b) Planificación de Procesos
+
+#### Objetivo de la Planificación
+Asignar el procesador entre los procesos listos de forma eficiente y justa.
+
+#### Algoritmos de Planificación
+
+##### FCFS (First Come, First Served)
+- Los procesos se atienden en orden de llegada.
+- **Ventajas:** simple, justo.
+- **Desventajas:** tiempo de espera elevado para procesos cortos.
+
+##### SJF (Shortest Job First)
+- Elige el proceso con menor tiempo estimado de CPU.
+- **Ventajas:** tiempo de espera promedio mínimo.
+- **Desventajas:** puede provocar inanición.
+
+##### Round-Robin
+- Se asigna un **quantum** de tiempo a cada proceso en orden circular.
+- **Ventajas:** buena respuesta para sistemas interactivos.
+- **Desventajas:** depende del tamaño del quantum.
+
+##### Por Prioridad
+- Cada proceso tiene una prioridad; se ejecuta el de mayor prioridad.
+- **Ventajas:** permite distinguir entre procesos críticos y no críticos.
+- **Desventajas:** riesgo de inanición para prioridades bajas.
+
+##### Colas Múltiples
+- Varios niveles de colas según características (interactivo, por lotes, etc.).
+- Cada cola puede tener su propio algoritmo.
+
+##### Planificación de 2 Niveles
+- Combinación de planificación a largo plazo (procesos nuevos) y a corto plazo (procesos listos para CPU).
+
+#### Política vs. Mecanismo
+- **Política:** qué se debe hacer (por ejemplo, elegir el proceso más corto).
+- **Mecanismo:** cómo se implementa esa decisión.
+
+---
+
+### c) Comunicación entre Procesos
+
+#### Procesos Concurrentes
+- Son procesos que se ejecutan simultáneamente o de forma entrelazada.
+
+#### Condiciones de Competencia (Race Conditions)
+- Ocurren cuando múltiples procesos acceden y modifican datos compartidos de forma concurrente.
+
+#### Secciones Críticas
+- Parte del código donde se accede a recursos compartidos.
+
+#### Exclusión Mutua con Espera Ocupada
+- Estrategias como:
+  - **Desactivación de interrupciones**
+  - **Bandera de giro (spinlock)**
+  - **Algoritmo de Peterson**
+
+#### Dormir y Despertar
+- Los procesos pueden suspenderse voluntariamente (sleep) y ser reanudados por otros procesos (wake).
+
+#### Semáforos
+- Variable entera utilizada para controlar el acceso a recursos compartidos.
+- Operaciones atómicas:
+  - `wait()` o `P()`
+  - `signal()` o `V()`
+
+#### Monitores
+- Abstracción de alto nivel que encapsula variables, estructuras y funciones con exclusión mutua automática.
+
+#### Transferencia de Mensajes
+- Los procesos se comunican mediante el envío y recepción de mensajes.
+- Puede ser **sincrónica** o **asincrónica**.
+- Utilizada en sistemas distribuidos o sin memoria compartida.
+
+---
+
+## Objetivos Específicos
+
+- Modelizar los Estados de un Proceso (Nuevo, Listo, Ejecutando, Espera, Terminado).
+- Explicar funciones de los Planificadores y cómo impactan en los Estados del Proceso.
+- Ejemplificar los Algoritmos de Planificación de CPU (FCFS, SJF, RR, Prioridad).
+- Analizar **ventajas/desventajas** de cada algoritmo:
+  - RR: Interactivo, pero sensible al quantum.
+  - SJF: Óptimo en teoría, difícil de predecir.
+- Evaluar la utilidad de **hilos** frente a procesos:
+  - Menor sobrecarga, pero más complejos de sincronizar.
+- Comparar algoritmos por:
+  - **Eficiencia** (uso del CPU, rendimiento).
+  - **Eficacia** (tiempo de respuesta, equidad).
+- Ejemplificar la planificación en sistemas reales:
+  - Linux: utiliza colas multinivel y prioridades.
+  - Windows: planificación por prioridad con retroalimentación.
+- Relacionar conceptos teóricos con implementaciones reales en sistemas operativos.
+
+
+# Apunte: Procesos Concurrentes, Sincronización y Grafos de Precedencia
+
+## 🔹 1. Procesos Secuenciales vs. Concurrentes
+
+### Procesos Secuenciales
+
+* Ejecutan una **secuencia de instrucciones** una tras otra en un solo procesador.
+* Siempre producen los **mismos resultados** si se les dan los mismos datos.
+* No requieren sincronización ni comunicación.
+
+### Procesos Concurrentes
+
+* Involucran **dos o más procesos/hilos** que pueden ejecutarse **simultáneamente o entrelazadamente**.
+* Requieren **sincronización y comunicación** entre procesos.
+* Pueden superponerse en el tiempo y aprovechar el paralelismo.
+
+---
+
+## 🔹 2. Conjuntos de Lectura y Escritura
+
+### Notaciones:
+
+* **R(Si)**: conjunto de lectura de la sentencia `Si` (variables leídas sin modificarse).
+* **W(Si)**: conjunto de escritura de la sentencia `Si` (variables modificadas por `Si`).
+
+### Ejemplo:
+
+```text
+S1: x = a + b       R(S1) = {a, b}       W(S1) = {x}
+S2: y = c + b       R(S2) = {c, b}       W(S2) = {y}
+S3: z = x + b       R(S3) = {x, b}       W(S3) = {z}
+```
+
+---
+
+## 🔹 3. Condiciones de Bernstein (para concurrencia segura)
+
+Dos instrucciones `Si` y `Sk` pueden ejecutarse **concurrentemente** si se cumple:
+
+1. R(Si) ∩ W(Sk) = ∅
+2. W(Si) ∩ R(Sk) = ∅
+3. W(Si) ∩ W(Sk) = ∅
+
+Estas condiciones aseguran que no hay conflictos de lectura/escritura.
+
+### Ejemplo que permite concurrencia:
+
+```text
+S1: x = a + b       R(S1) = {a,b}, W(S1) = {x}
+S2: y = c + b       R(S2) = {c,b}, W(S2) = {y}
+Condiciones de Bernstein se cumplen ✔
+```
+
+### Ejemplo que NO permite concurrencia:
+
+```text
+S1: x = a + b       R(S1) = {a,b}, W(S1) = {x}
+S3: z = x + b       R(S3) = {x,b}, W(S3) = {z}
+W(S1) ∩ R(S3) = {x} → conflicto ❌
+```
+
+---
+
+## 🔹 4. Grafo de Precedencia
+
+Un **grafo dirigido sin ciclos** que representa la dependencia entre sentencias:
+
+* **Nodos**: instrucciones o bloques.
+* **Flechas**: dependen del orden de ejecución.
+
+### Ejemplo:
+
+```text
+S1
+ └──→ S2
+ └─→ S3
+ └─→ S4
+S2, S3, S4 deben esperar que termine S1
+S5 espera a que terminen S2, S3 y S4
+```
+
+### 🌟 Ventajas del uso de grafos:
+
+* Permiten analizar **paralelismo potencial**.
+* Mejoran la eficiencia en sistemas multiprocesador.
+
+---
+
+## 🔹 5. Expresiones Fork / Join
+
+### Fork
+
+* Divide el flujo en varios hilos.
+* Cada hilo comienza en una etiqueta (`Fork L1;` ejecuta desde `L1:`).
+
+### Join
+
+* Espera a que varios hilos terminen antes de continuar.
+
+### Ejemplo de código:
+
+```text
+S0;
+Cont = 2;
+Fork L1;
+S1;
+Goto U1;
+L1: S2;
+Goto U1;
+U1: join Cont;
+S3;
+```
+
+### Representación:
+
+```mermaid
+graph TD
+  S0 --> Cont
+  Cont --> ForkL1
+  ForkL1 --> S1
+  ForkL1 --> L1S2
+  S1 --> U1
+  L1S2 --> U1
+  U1 --> Join
+  Join --> S3
+```
+
+---
+
+## 🔹 6. Expresiones Cobegin / Coend
+
+Una forma de indicar que ciertas instrucciones pueden ejecutarse **en paralelo**.
+
+### Sintaxis:
+
+```text
+S1;
+Cobegin
+  S2;
+  S3;
+Coend
+S4;
+```
+
+* `S2` y `S3` se ejecutan en paralelo.
+* `S4` espera a que ambas terminen.
+
+---
+
+## 🔹 7. Ejemplo con Fork/Join
+
+### Código:
+
+```text
+S0;
+Cont = 4;
+Fork L1;
+Fork L2;
+S1;
+S4;
+Goto U1;
+L1: S2;
+Fork L3;
+S5;
+Goto U1;
+L3: S6;
+Goto U1;
+L2: S3;
+U1: join cont;
+S7;
+```
+
+### Tareas concurrentes:
+
+* **Hilo principal**: S1, S4
+* **L1**: S2, S5 (crea L3)
+* **L2**: S3
+* **L3**: S6
+
+### Grafo de Precedencia (Mermaid):
+
+```mermaid
+graph TD
+    S0 --> Cont
+    Cont --> ForkL1
+    ForkL1 --> ForkL2
+    ForkL2 --> S1
+    S1 --> S4
+    S4 --> U1
+
+    ForkL1 --> L1S2
+    L1S2 --> ForkL3
+    ForkL3 --> L1S5
+    L1S5 --> U1
+
+    ForkL3 --> L3S6
+    L3S6 --> U1
+
+    ForkL2 --> L2S3
+    L2S3 --> U1
+
+    U1 --> Join
+    Join --> S7
+```
+
+---
+
+## 🔹 8. Conclusiones
+
+* La **concurrencia** permite ejecutar tareas en paralelo pero requiere sincronización.
+* Los **fork/join** y **cobegin/coend** son mecanismos para controlar hilos.
+* Los **grafos de precedencia** ayudan a visualizar la ejecución concurrente y evitar errores.
+
+# Guía de Actividades Nº 2 - Sistemas Operativos
+
+## I - Cuestionario Guía de la Unidad 2
+
+### 1. ¿Qué es un Sistema Operativo?
+
+Es un software base que actúa como intermediario entre el hardware y el usuario. Gestiona los recursos del sistema (CPU, memoria, dispositivos de E/S) y proporciona una interfaz para que los programas se ejecuten.
+
+### 2. Describa los diferentes tipos de arquitecturas de sistemas operativos que conoce con sus ventajas y desventajas.
+
+* **Monolítico:** todo el sistema operativo corre en modo kernel.
+
+  * *Ventaja:* rendimiento.
+  * *Desventaja:* difícil de mantener.
+* **Microkernel:** funcionalidades mínimas en el kernel, el resto en espacio de usuario.
+
+  * *Ventaja:* estabilidad y seguridad.
+  * *Desventaja:* rendimiento menor por mayor comunicación entre procesos.
+* **Híbrido:** combina microkernel y monolítico (como Windows o Linux).
+
+  * *Ventaja:* balance entre rendimiento y modularidad.
+* **Cliente-servidor:** servicios como procesos separados que se comunican por mensajes.
+* **Virtualizado:** permite ejecutar varios SO simultáneamente.
+
+### 3. ¿Qué es el Kernel?
+
+Es el núcleo del sistema operativo. Controla los recursos del sistema, la planificación de procesos, la gestión de memoria, y el acceso al hardware.
+
+### 4. ¿Qué son los servicios?
+
+Son funciones que el sistema operativo ofrece a las aplicaciones, como gestión de archivos, comunicación entre procesos, acceso a dispositivos, etc.
+
+### 5. ¿Qué son los controladores (drivers)?
+
+Programas que permiten que el sistema operativo interactúe con dispositivos de hardware (impresoras, discos, placas de red, etc.).
+
+### 6. ¿Qué son las llamadas al sistema (system calls)?
+
+Interfaces que permiten a los programas de usuario solicitar servicios al sistema operativo.
+
+### 7. ¿Qué es un sistema multitarea (multitasking)?
+
+Sistema que puede ejecutar varios procesos simultáneamente usando planificación de CPU.
+
+### 8. ¿Qué es un sistema multiusuario?
+
+Sistema que permite que varios usuarios usen los recursos del sistema al mismo tiempo.
+
+### 9. ¿Qué es un sistema operativo de red y un sistema operativo distribuido?
+
+* **SO de red:** permite compartir recursos entre computadoras conectadas a una red (ej: Windows Server).
+* **SO distribuido:** coordina varios equipos para trabajar como un solo sistema unificado.
+
+---
+
+## II - Tareas de Laboratorio e Investigación (Linux)
+
+### 1. ¿Qué es el kernel de Linux y qué es una distro? Mencione la versión de ambos.
+
+* El **kernel** es el núcleo de Linux.
+* Una **distro** es un sistema operativo completo basado en el kernel de Linux (ej: Ubuntu, Fedora).
+* Para conocer versiones:
+
+  ```bash
+  uname -r     # versión del kernel
+  lsb_release -a   # versión de la distribución
+  ```
+
+### 2. ¿Qué tipo de arquitectura tiene su sistema operativo?
+
+Usar:
+
+```bash
+uname -m
+```
+
+Devuelve: x86\_64, armv7l, etc.
+
+### 3. ¿Qué es la shell? ¿Qué Shell utiliza su distro?
+
+* Es el interprete de comandos.
+* Usar:
+
+```bash
+echo $SHELL
+```
+
+### 4. ¿Qué es la GUI?
+
+Interfaz Gráfica de Usuario. Permite interacción visual con ventanas, iconos, etc.
+
+### 5. ¿Por qué utilizaría el CLI si tiene la GUI?
+
+* Mayor control
+* Automatización (scripts)
+* Eficiencia en tareas administrativas
+
+### 6. ¿Qué es el usuario root?
+
+El superusuario con todos los permisos del sistema. Puede modificar cualquier archivo o configuración.
+
+### 7. ¿Cómo crear un nuevo usuario?
+
+```bash
+sudo adduser nombre_usuario
+```
+
+### 8. ¿Cómo cambiar la clave de un usuario?
+
+```bash
+sudo passwd nombre_usuario
+```
+
+### 9. ¿Qué es el gestor de paquetes? ¿Qué gestor tiene su distro?
+
+* Sistema para instalar, actualizar y eliminar software.
+* Ubuntu/Debian: `apt`
+* Fedora: `dnf`
+* Arch: `pacman`
+
+### 10. ¿Para qué se usa el comando sudo?
+
+Permite ejecutar comandos como superusuario (root).
+
+### 11. ¿Cómo puede moverse entre directorios?
+
+```bash
+cd nombre_directorio
+cd ..  # subir un nivel
+```
+
+### 12. ¿Cómo crear un directorio?
+
+```bash
+mkdir nombre_directorio
+```
+
+### 13. ¿Cómo listar los archivos y directorios contenidos en un directorio?
+
+```bash
+ls     # básico
+ls -l  # detallado
+```
+
+### 14. ¿Cómo crear un archivo de texto?
+
+```bash
+touch archivo.txt
+```
+
+O editarlo con:
+
+```bash
+nano archivo.txt
+```
+
+### 15. ¿Cómo puedo solamente visualizar por pantalla un archivo de texto?
+
+```bash
+cat archivo.txt
+less archivo.txt
+```
+
+### 16. ¿Qué alternativas tiene para poder crear y editar un archivo de texto con su sistema operativo?
+
+* Editores CLI: `nano`, `vim`
+* Editores GUI: `gedit`, `kate`, etc.
+
+### 17. ¿Cómo se puede copiar un archivo de un directorio a otro?
+
+```bash
+cp archivo.txt /ruta/destino/
+```
+
+### 18. ¿Cómo se puede mover un archivo de un directorio a otro?
+
+```bash
+mv archivo.txt /ruta/destino/
+```
+
