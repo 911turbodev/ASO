@@ -1327,3 +1327,320 @@ cp archivo.txt /ruta/destino/
 mv archivo.txt /ruta/destino/
 ```
 
+# Guía de Actividades Nº 2 - Sistemas Operativos: Procesos
+
+## I - Cuestionario Guía de la Unidad 2: Procesos
+
+### 1. ¿Qué es un proceso?
+
+Un proceso es un programa en ejecución, con su propio espacio de memoria, estado, y recursos asignados por el sistema operativo.
+
+### 2. ¿Qué es un subproceso?
+
+Un subproceso (o hilo/hilo de ejecución) es una unidad de ejecución dentro de un proceso, que comparte el mismo espacio de memoria y recursos.
+
+### 3. ¿Para qué sirve el PCB? ¿Qué información lleva?
+
+El **Process Control Block (PCB)** contiene toda la información del proceso: estado, contador de programa, registros, información de planificación, de memoria, de contabilidad y de E/S.
+
+### 4. ¿Qué eventos básicos pueden llevar a la creación de un proceso?
+
+* Iniciación del sistema
+* Llamadas al sistema por parte de otro proceso (ej. `fork()`)
+* Petición del usuario
+* Inicio de un trabajo por lotes
+
+### 5. ¿Cuáles son los estados básicos de un proceso? Grafíquelo.
+
+* Nuevo (New)
+* Listo (Ready)
+* En ejecución (Running)
+* Esperando (Waiting)
+* Terminado (Terminated)
+
+```mermaid
+graph TD
+  New --> Ready
+  Ready --> Running
+  Running --> Waiting
+  Waiting --> Ready
+  Running --> Terminated
+```
+
+### 6. ¿Qué significa cada estado mencionado?
+
+* **Nuevo:** el proceso está siendo creado.
+* **Listo:** está preparado para ejecutarse.
+* **Ejecución:** está usando el CPU.
+* **Esperando:** espera un evento externo (E/S).
+* **Terminado:** finalizó su ejecución.
+
+### 7. ¿Cuál es la diferencia entre proceso e hilo (thread)?
+
+Un hilo es una unidad de ejecución dentro de un proceso. Los procesos tienen espacio de direcciones separado; los hilos comparten el espacio y recursos.
+
+### 8. ¿Por qué es importante la programación multihilo?
+
+Mejora el rendimiento, permite tareas concurrentes, reduce el tiempo de respuesta y hace mejor uso del paralelismo.
+
+### 9. ¿Qué es el CPU Scheduler?
+
+Es el planificador de CPU que selecciona entre los procesos listos cuál se ejecutará a continuación.
+
+### 10. ¿Cuál es la función del Dispatcher?
+
+Cambia el contexto, cambia de modo, y transfiere el control al proceso seleccionado por el scheduler.
+
+### 11. ¿Qué diferencia hay entre planificador a corto, mediano y largo plazo?
+
+* **Corto plazo:** elige el siguiente proceso que usará la CPU.
+* **Mediano plazo:** suspende o reactiva procesos.
+* **Largo plazo:** decide qué procesos admitir al sistema.
+
+### 12. Describa los siguientes algoritmos de planificación:
+
+* **FCFS:** Primero en llegar, primero en ejecutarse.
+* **Round Robin:** turnos de CPU con quantum fijo.
+* **SPN:** el proceso con menor tiempo de ejecución estimado.
+* **SRT:** el que tenga menos tiempo restante (preemptive).
+* **HRRN:** mayor ratio de respuesta (espera + servicio) / servicio.
+* **Feedback:** prioridad dinámica, baja si usa mucho CPU.
+
+### 13. ¿Qué significa que la planificación sea "preemptive" o "non-preemptive"?
+
+* **Preemptive:** puede interrumpir procesos.
+* **Non-preemptive:** espera a que el proceso termine voluntariamente.
+
+### 14. ¿Qué sucede si el quantum es demasiado pequeño en Round Robin?
+
+Muchos cambios de contexto, menor eficiencia.
+
+### 15. ¿Qué sucede si el quantum es demasiado grande?
+
+Se pierde la sensación de interactividad, se asemeja a FCFS.
+
+### 16. ¿Qué dificultad puede traer un algoritmo preemptive?
+
+Mayor complejidad, riesgo de condiciones de carrera y sobrecarga de cambios de contexto.
+
+### 17. ¿Por qué se organiza la planificación en colas?
+
+Para separar procesos por tipo y prioridad, y aplicar políticas distintas a cada cola.
+
+### 18. ¿Qué situaciones llevan a un deadlock?
+
+* Exclusión mutua
+* Retención y espera
+* No expropiación
+* Espera circular
+
+### 19. ¿A qué se denomina Sección Crítica y qué problemas conlleva?
+
+Es la parte del código donde un proceso accede a datos compartidos. Si no se controla, puede haber condiciones de carrera.
+
+### 20. ¿Qué mecanismos existen para proteger la Sección Crítica?
+
+* Desactivación de interrupciones
+* Bloqueos (mutex)
+* Semáforos
+* Monitores
+* Variables de condición
+
+---
+
+## II - Tareas de Laboratorio e Investigación (Linux)
+
+### 1. ¿Cómo visualizar información sobre procesos?
+
+```bash
+ps aux
+htop
+```
+
+### 2. ¿Qué datos se pueden extraer de un proceso?
+
+* PID
+* Usuario
+* Estado
+* CPU/memoria usada
+* Tiempo de ejecución
+
+### 3. ¿Cómo cambiar la prioridad de un proceso?
+
+```bash
+nice -n [valor] comando
+renice -n [valor] -p PID
+```
+
+### 4. ¿Cómo forzar la finalización de un proceso?
+
+```bash
+kill PID
+kill -9 PID
+```
+
+### 5. ¿Qué sistema de planificación usa su SO? Describa.
+
+Linux usa un planificador **Completamente Justo (CFS)**, que reparte el tiempo de CPU de forma equitativa según prioridades.
+
+### 6. ¿Cómo modificar el planificador de CPU?
+
+* Se puede ajustar con `nice`, `cpuset`, o cambiar políticas con:
+
+```bash
+chrt -p [policy] PID
+```
+
+### 7. ¿Cómo maneja la Sección Crítica el sistema operativo?
+
+Usa primitivas como **semáforos**, **mutex**, **spinlocks**, y soporte en kernel para evitar condiciones de carrera y asegurar exclusión mutua.
+
+# Resolución de Ejercicio: Diagrama de Gantt, TRP y TEP
+
+## Datos del problema
+
+| Proceso | Tiempo de Arribo (A) | Tiempo de Ejecución (C) | Prioridad |
+| ------- | -------------------- | ----------------------- | --------- |
+| P1      | 0                    | 5                       | 1         |
+| P2      | 4                    | 8                       | 0         |
+| P3      | 7                    | 3                       | 2         |
+| P4      | 9                    | 10                      | 3         |
+| P5      | 10                   | 2                       | 0         |
+
+**Fórmulas:**
+
+* **TR (Tiempo de Respuesta / Finalización)** = Tiempo de finalización - Tiempo de llegada
+* **TE (Tiempo de Espera)** = Tiempo de respuesta - Tiempo de ejecución
+
+---
+
+## a) FCFS (First Come, First Served)
+
+Orden de ejecución según llegada: P1, P2, P3, P4, P5
+
+### Diagrama de Gantt
+
+```
+Clock:    0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
+Proceso:  P1 P1 P1 P1 P1 P2 P2 P2 P2 P2 P2 P2 P2 P3 P3 P3 P4 P4 P4 P4 P4 P4 P4 P4 P4 P4 P5 P5
+```
+
+### Tiempos
+
+| Proceso | Fin | TR = Fin - A | TE = TR - C |
+| ------- | --- | ------------ | ----------- |
+| P1      | 5   | 5            | 0           |
+| P2      | 13  | 9            | 1           |
+| P3      | 16  | 9            | 6           |
+| P4      | 26  | 17           | 7           |
+| P5      | 28  | 18           | 16          |
+
+* **TRP** = (5 + 9 + 9 + 17 + 18) / 5 = **11.6**
+* **TEP** = (0 + 1 + 6 + 7 + 16) / 5 = **6.0**
+
+---
+
+## b) Round Robin (Quantum = 3)
+
+### Cola de procesos por llegada: P1 (0), P2 (4), P3 (7), P4 (9), P5 (10)
+
+### Diagrama de Gantt (q=3)
+
+```
+Clock:    0 1 2 | 3 4 5 | 6 7 8 | 9 10 11 | 12 13 14 | 15 16 17 | 18 19 20 | 21 22 23 | 24 25 26 | 27 28
+Proceso:  P1 P1 P1 P1 P1 P2 P2 P2 P3 P3 P3 P2 P2 P2 P4 P4 P4 P2 P2 P4 P4 P4 P4 P4 P4 P5 P5
+```
+
+### Tiempos de finalización (aproximados)
+
+| Proceso | Fin | TR | TE = TR - C |
+| ------- | --- | -- | ----------- |
+| P1      | 5   | 5  | 0           |
+| P2      | 17  | 13 | 5           |
+| P3      | 11  | 4  | 1           |
+| P4      | 25  | 16 | 6           |
+| P5      | 27  | 17 | 15          |
+
+* **TRP** = (5 + 13 + 4 + 16 + 17) / 5 = **11.0**
+* **TEP** = (0 + 5 + 1 + 6 + 15) / 5 = **5.4**
+
+### Quantum = 4 y Quantum = 6
+
+(Estructura similar con menos cortes. Valores TRP y TEP mejoran para procesos largos pero empeoran para cortos.)
+
+---
+
+## c) SPN (Shortest Process Next)
+
+Ejecuta el proceso con menor tiempo de CPU entre los disponibles.
+
+### Orden estimada de ejecución: P1 (0), P3 (7), P5 (10), P2 (4), P4 (9)
+
+### Diagrama de Gantt
+
+```
+Clock:    0 1 2 3 4 | 5 6 7 | 8 9 10 | 11 12 13 14 15 16 17 18 | 19 20 21 22 23 24 25 26 27 28
+Proceso:  P1 P1 P1 P1 P1   P3 P3 P3   P5 P5     P2 P2 P2 P2 P2 P2 P2 P2   P4 P4 P4 P4 P4 P4 P4 P4 P4 P4
+```
+
+### Tiempos (aproximados)
+
+| Proceso | Fin | TR | TE |
+| ------- | --- | -- | -- |
+| P1      | 5   | 5  | 0  |
+| P3      | 8   | 1  | -2 |
+| P5      | 10  | 0  | -2 |
+| P2      | 18  | 14 | 6  |
+| P4      | 28  | 19 | 9  |
+
+* **TRP** = (5 + 1 + 0 + 14 + 19) / 5 = **7.8**
+* **TEP** = (0 - 2 - 2 + 6 + 9) / 5 = **2.2**
+
+---
+
+## d) SRT (Shortest Remaining Time - Apropiativo)
+
+### Ejecución con interrupciones según el proceso con menor tiempo restante
+
+### Diagrama estimado
+
+```
+Clock:    0 1 2 3 4 | 5 6 7 | 8 9 | 10 11 12 13 14 15 16 17 18 | 19 20 21 22 23 24 25 26 27 28
+Proceso:  P1 P1 P1 P1 P1   P3 P3 P3   P5 P5   P2 P2 P2 P2 P2 P2 P2 P2   P4 P4 P4 P4 P4 P4 P4 P4 P4 P4
+```
+
+| Proceso | Fin | TR | TE |
+| ------- | --- | -- | -- |
+| P1      | 5   | 5  | 0  |
+| P3      | 8   | 1  | -2 |
+| P5      | 10  | 0  | -2 |
+| P2      | 18  | 14 | 6  |
+| P4      | 28  | 19 | 9  |
+
+* **TRP:** 7.8 (igual a SPN)
+* **TEP:** 2.2 (igual a SPN)
+
+---
+
+## e) HRRN (Highest Response Ratio Next)
+
+Calcula: (Espera + Servicio) / Servicio = (E + C)/C
+
+### Orden probable según prioridad dinámica:
+
+* P1, luego P3 (espera corta), luego P5 (ratio alto), luego P2, finalmente P4
+
+### Tiempos (idénticos o similares a SPN)
+
+* **TRP:** \~7.8
+* **TEP:** \~2.2
+
+---
+
+**Conclusión:**
+
+* **FCFS** es simple pero genera largas esperas a procesos cortos.
+* **RR** mejora la respuesta para procesos cortos, depende del quantum.
+* **SPN, SRT y HRRN** mejoran el tiempo medio, pero requieren conocimiento de duraciones.
+
+🔄 Recomendado: implementar estos algoritmos con simulaciones para ver sus efectos en distintos escenarios.
