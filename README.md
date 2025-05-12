@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/01b376c3-531d-481b-8236-c8200d21f383)# ASO
+# ASO
 
 ## 📘 ¿Qué es una computadora según Von Neumann?  
 John von Neumann definió una computadora como una máquina electrónica de propósito general, capaz de almacenar y ejecutar programas que manipulan datos.
