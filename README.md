@@ -2126,3 +2126,235 @@ De los algoritmos analizados, **SRT (Shortest Remaining Time)** muestra el mejor
 | E       | 10      | 2         | 16            | 6       | 4      |
 | G       | 10      | 5         | 21            | 11      | 6      |
 | F       | 10      | 6         | 
+
+
+
+
+![image](https://github.com/user-attachments/assets/41307082-d800-4062-b377-a38b19ce9cf9)
+
+S1;
+Cont = 2;  // Inicializa el contador a 2, indicando que 2 hilos deben unirse.
+Fork L_S3; // El hilo principal crea un nuevo hilo que comenzará en la etiqueta L_S3.
+S2;        // El hilo principal continúa ejecutando S2.
+Goto U_S4; // Una vez que S2 termina, el hilo principal salta al punto de unión U_S4.
+
+L_S3: S3;  // El hilo forkeado ejecuta S3.
+      Goto U_S4; // Una vez que S3 termina, el hilo forkeado salta al punto de unión U_S4.
+
+U_S4: join Cont; // Ambos hilos (el que ejecutó S2 y el que ejecutó S3) alcanzan este punto y se unen.
+S4;            // S4 solo se ejecuta una vez que ambos hilos han completado sus tareas (S2 y S3).
+S5;            // S5 se ejecuta después de S4.
+
+![image](https://github.com/user-attachments/assets/59bb87a8-2486-43f0-b7f3-0f450db8e3d0)
+
+
+![image](https://github.com/user-attachments/assets/3ddfdade-987a-4330-8570-7692a97557a6)
+S1;
+
+// Primer bloque paralelo: S2 y S3
+Cont1 = 2;  // Inicializa el contador a 2 para la unión de S2 y S3
+Fork L_S3;  // El hilo principal crea un nuevo hilo que comenzará en la etiqueta L_S3
+S2;         // El hilo principal continúa ejecutando S2
+Goto U_S4;  // Salta al punto de unión para S4
+
+L_S3: S3;   // El hilo forkeado ejecuta S3
+      Goto U_S4; // Salta al punto de unión para S4
+
+U_S4: join Cont1; // Ambos hilos (S2 y S3) deben alcanzar este punto antes de continuar
+S4;
+
+// Segundo bloque paralelo: S5 y S6
+Cont2 = 2;  // Inicializa el contador a 2 para la unión de S5 y S6
+Fork L_S6;  // El hilo principal crea un nuevo hilo que comenzará en la etiqueta L_S6
+S5;         // El hilo principal continúa ejecutando S5
+Goto U_S7;  // Salta al punto de unión para S7
+
+L_S6: S6;   // El hilo forkeado ejecuta S6
+      Goto U_S7; // Salta al punto de unión para S7
+
+U_S7: join Cont2; // Ambos hilos (S5 y S6) deben alcanzar este punto antes de continuar
+S7;
+
+![image](https://github.com/user-attachments/assets/069aa02d-76f5-48e5-a553-e19aadba9c4a)
+
+![image](https://github.com/user-attachments/assets/30186e8d-fc16-4240-b130-d09f91022382)
+
+// Variables de contador global para las barreras de sincronización
+Cont_S5 = 2; // S5 necesita que S2 y S3 finalicen
+Cont_S6 = 2; // S6 necesita que S3 y S4 finalicen
+Cont_S7 = 2; // S7 necesita que S5 y S6 finalicen
+
+S1; // Ejecuta la sentencia S1
+
+// Bifurcación de hilos desde S1
+Fork L_Path_S2; // Crea un nuevo hilo para ejecutar la rama de S2
+Fork L_Path_S4; // Crea otro nuevo hilo para ejecutar la rama de S4
+
+// El hilo principal continúa ejecutando S3
+S3;
+// S3 ha terminado, ahora señaliza su finalización a las barreras de S5 y S6
+Decrement(Cont_S5); // S3 contribuye a la finalización de la dependencia de S5
+If (Cont_S5 == 0) then Fork L_Path_S5; // Si S5 está listo, crea un hilo para S5
+
+Decrement(Cont_S6); // S3 contribuye a la finalización de la dependencia de S6
+If (Cont_S6 == 0) then Fork L_Path_S6; // Si S6 está listo, crea un hilo para S6
+
+// El hilo principal (después de S3) ahora puede esperar el resultado final o terminar su parte.
+// En un sistema real, podría haber un 'join' final o un mecanismo de espera para S8.
+
+
+// --- Rutas de ejecución de los hilos ---
+
+// L_Path_S2: Hilo para S2
+L_Path_S2:
+S2;
+// S2 ha terminado, señaliza su finalización a la barrera de S5
+Decrement(Cont_S5); // S2 contribuye a la finalización de la dependencia de S5
+If (Cont_S5 == 0) then Fork L_Path_S5; // Si S5 está listo, crea un hilo para S5
+// Este hilo termina su ejecución.
+
+
+// L_Path_S4: Hilo para S4
+L_Path_S4:
+S4;
+// S4 ha terminado, señaliza su finalización a la barrera de S6
+Decrement(Cont_S6); // S4 contribuye a la finalización de la dependencia de S6
+If (Cont_S6 == 0) then Fork L_Path_S6; // Si S6 está listo, crea un hilo para S6
+// Este hilo termina su ejecución.
+
+
+// L_Path_S5: Hilo para S5 (se inicia cuando Cont_S5 llega a 0)
+L_Path_S5:
+S5;
+// S5 ha terminado, señaliza su finalización a la barrera de S7
+Decrement(Cont_S7); // S5 contribuye a la finalización de la dependencia de S7
+If (Cont_S7 == 0) then GoTo L_Path_S7; // Si S7 está listo, pasa el control a L_Path_S7 (o forka un nuevo hilo)
+// Este hilo termina su ejecución.
+
+
+// L_Path_S6: Hilo para S6 (se inicia cuando Cont_S6 llega a 0)
+L_Path_S6:
+S6;
+// S6 ha terminado, señaliza su finalización a la barrera de S7
+Decrement(Cont_S7); // S6 contribuye a la finalización de la dependencia de S7
+If (Cont_S7 == 0) then GoTo L_Path_S7; // Si S7 está listo, pasa el control a L_Path_S7 (o forka un nuevo hilo)
+// Este hilo termina su ejecución.
+
+
+// L_Path_S7: Ejecución final de S7 y S8 (se inicia cuando Cont_S7 llega a 0)
+L_Path_S7:
+S7; // Ejecuta S7
+S8; // Ejecuta S8 (ya que S8 es secuencial a S7)
+
+// Todas las sentencias han completado su ejecución.
+
+Explicación:
+Este enfoque de Fork/Join con contadores explícitos permite una representación precisa del grafo de precedencia, ya que cada join actúa como una barrera que activa la siguiente fase de ejecución solo cuando todas sus dependencias se han cumplido. Esto es esencial para grafos con dependencias complejas y múltiples puntos de convergencia como el presentado.
+
+![image](https://github.com/user-attachments/assets/5d4e3042-2555-47ae-8d26-25fd3beeab26)
+
+
+S1;
+Cont = 3;
+Fork L1;  // S2
+Fork L2;  // S3
+Fork L3;  // S4
+L1: S2;
+Goto U1;
+
+L2: S3;
+Goto U1;
+
+L3: S4;
+Goto U1;
+
+U1: join Cont;
+
+// Luego de que S2, S3, S4 hayan terminado:
+S5; // depende de S2 y S3
+S6; // depende de S2
+S8; // depende de S4
+
+Cont = 2;
+Fork L4; // S7
+Fork L5; // S9
+L4: S7;  // depende de S4 y S5
+Goto U2;
+
+L5: S9;  // depende de S6
+Goto U2;
+
+U2: join Cont;
+
+SA; // depende de S6 y S7
+
+// SB depende de SA, S8, S9
+SB;
+
+# graph TD
+
+S1 --> S2
+S1 --> S3
+S1 --> S4
+
+S2 --> S5
+S3 --> S5
+
+S2 --> S6
+S4 --> S7
+S5 --> S7
+
+S4 --> S8
+
+S6 --> S9
+S6 --> SA
+S7 --> SA
+
+S9 --> SB
+SA --> SB
+S8 --> SB
+
+# 🔍 Cómo leerlo:
+S2, S3, S4 pueden ejecutarse en paralelo tras S1.
+
+S5 necesita que terminen S2 y S3.
+
+S6 y S5 dependen de S2 y pueden correr en paralelo si no comparten variables.
+
+S7 espera a que terminen S4 y S5.
+
+S8 depende solo de S4 (se puede paralelizar con S7).
+
+S9 depende solo de S6.
+
+SA depende de S6 y S7.
+
+SB es el nodo final, que espera a SA, S8 y S9.
+
+graph TD
+
+S1 --> SetCont
+SetCont --> ForkS2S3S4
+
+ForkS2S3S4 --> L1S2
+ForkS2S3S4 --> L2S3
+ForkS2S3S4 --> L3S4
+
+L1S2 --> S5
+L2S3 --> S5
+S5 --> S7
+
+L1S2 --> S6
+L3S4 --> S7
+L3S4 --> S8
+
+S6 --> S9
+S6 --> SA
+S7 --> SA
+
+S9 --> SB
+SA --> SB
+S8 --> SB
+
+El grafo representa múltiples oportunidades de paralelismo, especialmente entre ramas que dependen de S1. Las estructuras de control Fork/Join o Cobegin/Coend permiten organizar dicha ejecución concurrente.
+
