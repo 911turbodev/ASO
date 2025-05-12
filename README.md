@@ -2054,3 +2054,75 @@ Relación de Respuesta (RR) = (Tiempo de Espera + Tiempo de Ejecución) / Tiempo
 | **HRRN** | 8.0 | 4.0 |
 
 De los algoritmos analizados, **SRT (Shortest Remaining Time)** muestra el mejor rendimiento con el menor tiempo de retorno promedio y el menor tiempo de espera promedio para este conjunto de procesos.
+
+# Resultados de Planificadores de CPU
+
+## Datos de entrada
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Prioridad |
+|---------|------------------|----------------------|-----------|
+| A       | 0                | 15                   | 1         |
+| B       | 0                | 9                    | 0         |
+| C       | 0                | 5                    | 0         |
+| D       | 0                | 10                   | 2         |
+| E       | 10               | 2                    | 2         |
+| F       | 10               | 6                    | 0         |
+| G       | 10               | 5                    | 1         |
+| H       | 13               | 12                   | 1         |
+
+---
+
+## b1) Round Robin (Quantum = 3)
+
+| Proceso | Llegada | Ejecución | Finalización | Retorno | Espera |
+|---------|---------|-----------|---------------|---------|--------|
+| A       | 0       | 15        | 61            | 61      | 46     |
+| B       | 0       | 9         | 40            | 40      | 31     |
+| C       | 0       | 5         | 20            | 20      | 15     |
+| D       | 0       | 10        | 55            | 55      | 45     |
+| E       | 10      | 2         | 22            | 12      | 10     |
+| F       | 10      | 6         | 43            | 33      | 27     |
+| G       | 10      | 5         | 45            | 35      | 30     |
+| H       | 13      | 12        | 64            | 51      | 39     |
+
+---
+
+## b2) Round Robin (Quantum = 4)
+
+| Proceso | Llegada | Ejecución | Finalización | Retorno | Espera |
+|---------|---------|-----------|---------------|---------|--------|
+| A       | 0       | 15        | 60            | 60      | 45     |
+| B       | 0       | 9         | 48            | 48      | 39     |
+| C       | 0       | 5         | 35            | 35      | 30     |
+| D       | 0       | 10        | 57            | 57      | 47     |
+| E       | 10      | 2         | 26            | 16      | 14     |
+| F       | 10      | 6         | 50            | 40      | 34     |
+| G       | 10      | 5         | 51            | 41      | 36     |
+| H       | 13      | 12        | 64            | 51      | 39     |
+
+---
+
+## b3) Round Robin (Quantum = 6)
+
+| Proceso | Llegada | Ejecución | Finalización | Retorno | Espera |
+|---------|---------|-----------|---------------|---------|--------|
+| A       | 0       | 15        | 58            | 58      | 43     |
+| B       | 0       | 9         | 45            | 45      | 36     |
+| C       | 0       | 5         | 17            | 17      | 12     |
+| D       | 0       | 10        | 55            | 55      | 45     |
+| E       | 10      | 2         | 31            | 21      | 19     |
+| F       | 10      | 6         | 37            | 27      | 21     |
+| G       | 10      | 5         | 42            | 32      | 27     |
+| H       | 13      | 12        | 64            | 51      | 39     |
+
+---
+
+## c) SPN (Shortest Process Next - No Preventivo)
+
+| Proceso | Llegada | Ejecución | Finalización | Retorno | Espera |
+|---------|---------|-----------|---------------|---------|--------|
+| C       | 0       | 5         | 5             | 5       | 0      |
+| B       | 0       | 9         | 14            | 14      | 5      |
+| E       | 10      | 2         | 16            | 6       | 4      |
+| G       | 10      | 5         | 21            | 11      | 6      |
+| F       | 10      | 6         | 
