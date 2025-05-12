@@ -1,4 +1,4 @@
-# ASO
+![image](https://github.com/user-attachments/assets/01b376c3-531d-481b-8236-c8200d21f383)# ASO
 
 ## 📘 ¿Qué es una computadora según Von Neumann?  
 John von Neumann definió una computadora como una máquina electrónica de propósito general, capaz de almacenar y ejecutar programas que manipulan datos.
@@ -1496,6 +1496,7 @@ chrt -p [policy] PID
 Usa primitivas como **semáforos**, **mutex**, **spinlocks**, y soporte en kernel para evitar condiciones de carrera y asegurar exclusión mutua.
 
 # Resolución de Ejercicio: Diagrama de Gantt, TRP y TEP
+![image](https://github.com/user-attachments/assets/94d98768-30d2-48db-957b-fe340b8fe0b5)
 
 ## Datos del problema
 
@@ -1644,3 +1645,412 @@ Calcula: (Espera + Servicio) / Servicio = (E + C)/C
 * **SPN, SRT y HRRN** mejoran el tiempo medio, pero requieren conocimiento de duraciones.
 
 🔄 Recomendado: implementar estos algoritmos con simulaciones para ver sus efectos en distintos escenarios.
+
+![image](https://github.com/user-attachments/assets/33366681-50c9-4c17-bdef-ea2f434f3ed6)
+
+# Resolución de Ejercicios de Planificación de Procesos
+
+Este documento presenta la resolución de un problema de planificación de procesos utilizando diferentes algoritmos de CPU. Para cada algoritmo, se calculan el tiempo de finalización, el tiempo de retorno (Turnaround Time) y el tiempo de espera (Waiting Time) para cada proceso, así como los promedios de estos tiempos para el conjunto total de procesos.
+
+**Información de los Procesos:**
+
+| Proceso | Tiempo de Arribo (AT) | Tiempo de Ejecución (BT) | Prioridad |
+|---|---|---|---|
+| A | 0 | 3 | 1 |
+| B | 2 | 6 | 0 |
+| C | 4 | 4 | 2 |
+| D | 6 | 5 | 2 |
+| E | 8 | 2 | 0 |
+
+---
+
+### a) FCFS (First-Come, First-Served)
+
+Los procesos se ejecutan en el orden en que llegan.
+
+**Diagrama de Gantt (FCFS):**
+
+Clock:   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+
+Proceso: A  A  A |B  B  B  B  B  B |C  C  C  C |D  D  D  D  D |E  E
+
+**Cálculos Detallados:**
+
+* **Proceso A:**
+    * Tiempo de Inicio: 0
+    * Tiempo de Finalización: 0 + 3 = 3
+    * Tiempo de Retorno: 3 - 0 = 3
+    * Tiempo de Espera: 3 - 3 = 0
+* **Proceso B:**
+    * Tiempo de Inicio: 3
+    * Tiempo de Finalización: 3 + 6 = 9
+    * Tiempo de Retorno: 9 - 2 = 7
+    * Tiempo de Espera: 7 - 6 = 1
+* **Proceso C:**
+    * Tiempo de Inicio: 9
+    * Tiempo de Finalización: 9 + 4 = 13
+    * Tiempo de Retorno: 13 - 4 = 9
+    * Tiempo de Espera: 9 - 4 = 5
+* **Proceso D:**
+    * Tiempo de Inicio: 13
+    * Tiempo de Finalización: 13 + 5 = 18
+    * Tiempo de Retorno: 18 - 6 = 12
+    * Tiempo de Espera: 12 - 5 = 7
+* **Proceso E:**
+    * Tiempo de Inicio: 18
+    * Tiempo de Finalización: 18 + 2 = 20
+    * Tiempo de Retorno: 20 - 8 = 12
+    * Tiempo de Espera: 12 - 2 = 10
+
+**Resumen FCFS:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|
+| A | 0 | 3 | 3 | 3 | 0 |
+| B | 2 | 6 | 9 | 7 | 1 |
+| C | 4 | 4 | 13 | 9 | 5 |
+| D | 6 | 5 | 18 | 12 | 7 |
+| E | 8 | 2 | 20 | 12 | 10 |
+| **Totales** | | | | **43** | **23** |
+
+* **Tiempo de Retorno Promedio:** 43 / 5 = **8.6**
+* **Tiempo de Espera Promedio:** 23 / 5 = **4.6**
+
+---
+
+### b) Round Robin (RR)
+
+#### b.1) Round Robin con quantum q = 3
+
+**Diagrama de Gantt (RR q=3):**
+
+Clock:   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+
+Proceso: A  A  A |B  B  B |C  C  C |D  D  D |E  E |B  B  B |C  |D  D
+
+**Cálculos:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo Restante | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|---|
+| A | 0 | 3 | 0 | 3 | 3 - 0 = 3 | 3 - 3 = 0 |
+| B | 2 | 6 | 0 | 17 | 17 - 2 = 15 | 15 - 6 = 9 |
+| C | 4 | 4 | 0 | 18 | 18 - 4 = 14 | 14 - 4 = 10 |
+| D | 6 | 5 | 0 | 20 | 20 - 6 = 14 | 14 - 5 = 9 |
+| E | 8 | 2 | 0 | 14 | 14 - 8 = 6 | 6 - 2 = 4 |
+| **Totales** | | | | | **52** | **32** |
+
+* **Tiempo de Retorno Promedio:** 52 / 5 = **10.4**
+* **Tiempo de Espera Promedio:** 32 / 5 = **6.4**
+
+#### b.2) Round Robin con quantum q = 4
+
+**Diagrama de Gantt (RR q=4):**
+
+Clock:   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+
+Proceso: A  A  A |B  B  B  B |C  C  C  C |D  D  D  D |E  E |B  B |D
+
+**Cálculos:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo Restante | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|---|
+| A | 0 | 3 | 0 | 3 | 3 - 0 = 3 | 3 - 3 = 0 |
+| B | 2 | 6 | 0 | 19 | 19 - 2 = 17 | 17 - 6 = 11 |
+| C | 4 | 4 | 0 | 11 | 11 - 4 = 7 | 7 - 4 = 3 |
+| D | 6 | 5 | 0 | 20 | 20 - 6 = 14 | 14 - 5 = 9 |
+| E | 8 | 2 | 0 | 17 | 17 - 8 = 9 | 9 - 2 = 7 |
+| **Totales** | | | | | **50** | **30** |
+
+* **Tiempo de Retorno Promedio:** 50 / 5 = **10.0**
+* **Tiempo de Espera Promedio:** 30 / 5 = **6.0**
+
+#### b.3) Round Robin con quantum q = 6
+
+**Diagrama de Gantt (RR q=6):**
+Aquí tienes la resolución completa en formato Markdown, lista para copiar y pegar en un archivo README.md:
+
+# Resolución de Ejercicios de Planificación de Procesos
+
+Este documento presenta la resolución de un problema de planificación de procesos utilizando diferentes algoritmos de CPU. Para cada algoritmo, se calculan el tiempo de finalización, el tiempo de retorno (Turnaround Time) y el tiempo de espera (Waiting Time) para cada proceso, así como los promedios de estos tiempos para el conjunto total de procesos.
+
+**Información de los Procesos:**
+
+| Proceso | Tiempo de Arribo (AT) | Tiempo de Ejecución (BT) | Prioridad |
+|---|---|---|---|
+| A | 0 | 3 | 1 |
+| B | 2 | 6 | 0 |
+| C | 4 | 4 | 2 |
+| D | 6 | 5 | 2 |
+| E | 8 | 2 | 0 |
+
+---
+
+### a) FCFS (First-Come, First-Served)
+
+Los procesos se ejecutan en el orden en que llegan.
+
+**Diagrama de Gantt (FCFS):**
+
+![image](https://github.com/user-attachments/assets/1d7b4e88-2a82-4a76-9feb-fab7a1b6ba70)
+
+
+
+**Cálculos Detallados:**
+
+* **Proceso A:**
+    * Tiempo de Inicio: 0
+    * Tiempo de Finalización: 0 + 3 = 3
+    * Tiempo de Retorno: 3 - 0 = 3
+    * Tiempo de Espera: 3 - 3 = 0
+* **Proceso B:**
+    * Tiempo de Inicio: 3
+    * Tiempo de Finalización: 3 + 6 = 9
+    * Tiempo de Retorno: 9 - 2 = 7
+    * Tiempo de Espera: 7 - 6 = 1
+* **Proceso C:**
+    * Tiempo de Inicio: 9
+    * Tiempo de Finalización: 9 + 4 = 13
+    * Tiempo de Retorno: 13 - 4 = 9
+    * Tiempo de Espera: 9 - 4 = 5
+* **Proceso D:**
+    * Tiempo de Inicio: 13
+    * Tiempo de Finalización: 13 + 5 = 18
+    * Tiempo de Retorno: 18 - 6 = 12
+    * Tiempo de Espera: 12 - 5 = 7
+* **Proceso E:**
+    * Tiempo de Inicio: 18
+    * Tiempo de Finalización: 18 + 2 = 20
+    * Tiempo de Retorno: 20 - 8 = 12
+    * Tiempo de Espera: 12 - 2 = 10
+
+**Resumen FCFS:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|
+| A | 0 | 3 | 3 | 3 | 0 |
+| B | 2 | 6 | 9 | 7 | 1 |
+| C | 4 | 4 | 13 | 9 | 5 |
+| D | 6 | 5 | 18 | 12 | 7 |
+| E | 8 | 2 | 20 | 12 | 10 |
+| **Totales** | | | | **43** | **23** |
+
+* **Tiempo de Retorno Promedio:** 43 / 5 = **8.6**
+* **Tiempo de Espera Promedio:** 23 / 5 = **4.6**
+
+---
+
+### b) Round Robin (RR)
+
+#### b.1) Round Robin con quantum q = 3
+
+**Diagrama de Gantt (RR q=3):**
+
+![image](https://github.com/user-attachments/assets/1bb5e34e-9ceb-42b3-af15-27555bc57e88)
+
+
+
+**Cálculos:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo Restante | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|---|
+| A | 0 | 3 | 0 | 3 | 3 - 0 = 3 | 3 - 3 = 0 |
+| B | 2 | 6 | 0 | 17 | 17 - 2 = 15 | 15 - 6 = 9 |
+| C | 4 | 4 | 0 | 18 | 18 - 4 = 14 | 14 - 4 = 10 |
+| D | 6 | 5 | 0 | 20 | 20 - 6 = 14 | 14 - 5 = 9 |
+| E | 8 | 2 | 0 | 14 | 14 - 8 = 6 | 6 - 2 = 4 |
+| **Totales** | | | | | **52** | **32** |
+
+* **Tiempo de Retorno Promedio:** 52 / 5 = **10.4**
+* **Tiempo de Espera Promedio:** 32 / 5 = **6.4**
+
+#### b.2) Round Robin con quantum q = 4
+
+**Diagrama de Gantt (RR q=4):**
+![image](https://github.com/user-attachments/assets/b19aa2ef-c19c-4242-b29c-f6fd7faa87f2)
+
+
+
+**Cálculos:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo Restante | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|---|
+| A | 0 | 3 | 0 | 3 | 3 - 0 = 3 | 3 - 3 = 0 |
+| B | 2 | 6 | 0 | 19 | 19 - 2 = 17 | 17 - 6 = 11 |
+| C | 4 | 4 | 0 | 11 | 11 - 4 = 7 | 7 - 4 = 3 |
+| D | 6 | 5 | 0 | 20 | 20 - 6 = 14 | 14 - 5 = 9 |
+| E | 8 | 2 | 0 | 17 | 17 - 8 = 9 | 9 - 2 = 7 |
+| **Totales** | | | | | **50** | **30** |
+
+* **Tiempo de Retorno Promedio:** 50 / 5 = **10.0**
+* **Tiempo de Espera Promedio:** 30 / 5 = **6.0**
+
+#### b.3) Round Robin con quantum q = 6
+
+**Diagrama de Gantt (RR q=6):**
+
+![image](https://github.com/user-attachments/assets/20c73760-1e9e-41d7-bbf7-f7c09f70b7b5)
+
+
+**Cálculos:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo Restante | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|---|
+| A | 0 | 3 | 0 | 3 | 3 - 0 = 3 | 3 - 3 = 0 |
+| B | 2 | 6 | 0 | 9 | 9 - 2 = 7 | 7 - 6 = 1 |
+| C | 4 | 4 | 0 | 13 | 13 - 4 = 9 | 9 - 4 = 5 |
+| D | 6 | 5 | 0 | 18 | 18 - 6 = 12 | 12 - 5 = 7 |
+| E | 8 | 2 | 0 | 20 | 20 - 8 = 12 | 12 - 2 = 10 |
+| **Totales** | | | | | **43** | **23** |
+
+* **Tiempo de Retorno Promedio:** 43 / 5 = **8.6**
+* **Tiempo de Espera Promedio:** 23 / 5 = **4.6**
+
+---
+
+### c) SPN (Shortest Process Next / SJF No-Preemptive)
+
+Elige el proceso con el tiempo de ejecución más corto entre los procesos que han llegado y están listos.
+
+**Diagrama de Gantt (SPN):**
+
+![image](https://github.com/user-attachments/assets/947590c9-f87f-450d-93e4-d05f53e929b8)
+
+
+**Cálculos Detallados:**
+
+* **Tiempo 0:** Llega A (BT=3). Se ejecuta A.
+* **Tiempo 0-3:** A se ejecuta y finaliza en el tiempo 3.
+    * Procesos listos al tiempo 3: B (AT=2, BT=6). C (AT=4), D (AT=6), E (AT=8) aún no han llegado.
+    * Se selecciona B.
+* **Tiempo 3-9:** B se ejecuta y finaliza en el tiempo 9.
+    * Procesos listos al tiempo 9: C (AT=4, BT=4), D (AT=6, BT=5), E (AT=8, BT=2).
+    * El más corto es E (BT=2). Se selecciona E.
+* **Tiempo 9-11:** E se ejecuta y finaliza en el tiempo 11.
+    * Procesos listos al tiempo 11: C (BT=4), D (BT=5).
+    * El más corto es C (BT=4). Se selecciona C.
+* **Tiempo 11-15:** C se ejecuta y finaliza en el tiempo 15.
+    * Procesos listos al tiempo 15: D (BT=5).
+    * Se selecciona D.
+* **Tiempo 15-20:** D se ejecuta y finaliza en el tiempo 20.
+
+**Resumen SPN:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|
+| A | 0 | 3 | 3 | 3 | 0 |
+| B | 2 | 6 | 9 | 7 | 1 |
+| C | 4 | 4 | 15 | 11 | 7 |
+| D | 6 | 5 | 20 | 14 | 9 |
+| E | 8 | 2 | 11 | 3 | 1 |
+| **Totales** | | | | **44** | **18** |
+
+* **Tiempo de Retorno Promedio:** 44 / 5 = **8.8**
+* **Tiempo de Espera Promedio:** 18 / 5 = **3.6**
+
+---
+
+### d) SRT (Shortest Remaining Time)
+
+Elige el proceso con el tiempo de ejecución restante más corto. Es preemptivo.
+
+**Diagrama de Gantt (SRT):**
+
+![image](https://github.com/user-attachments/assets/18c0dd71-ce1e-46d2-b1dd-4c44956d968b)
+
+
+**Cálculos Detallados:**
+
+* **Tiempo 0:** Llega A (RB=3). CPU ejecuta A.
+* **Tiempo 0-2:** A se ejecuta.
+    * En el tiempo 2: Llega B (RB=6). A tiene RB=1. A (RB=1) es más corto que B (RB=6). A continúa.
+* **Tiempo 2-3:** A se ejecuta.
+    * En el tiempo 3: A finaliza (RB=0). Procesos listos: B (RB=6). (C, D, E aún no han llegado). CPU ejecuta B.
+* **Tiempo 3-4:** B se ejecuta.
+    * En el tiempo 4: Llega C (RB=4). B tiene RB=5. C (RB=4) es más corto que B (RB=5). CPU previene B, ejecuta C.
+* **Tiempo 4-6:** C se ejecuta.
+    * En el tiempo 6: Llega D (RB=5). C tiene RB=2. C (RB=2) es más corto que D (RB=5) y B (RB=5). C continúa.
+* **Tiempo 6-8:** C se ejecuta.
+    * En el tiempo 8: C finaliza (RB=0). Llega E (RB=2). Procesos listos: B (RB=5), D (RB=5), E (RB=2). E (RB=2) es el más corto. CPU ejecuta E.
+* **Tiempo 8-10:** E se ejecuta.
+    * En el tiempo 10: E finaliza (RB=0). Procesos listos: B (RB=5), D (RB=5). B y D tienen el mismo RB. Se selecciona B (por ser primero en llegar o por ID). CPU ejecuta B.
+* **Tiempo 10-15:** B se ejecuta.
+    * En el tiempo 15: B finaliza (RB=0). Proceso listo: D (RB=5). CPU ejecuta D.
+* **Tiempo 15-20:** D se ejecuta y finaliza en el tiempo 20.
+
+**Resumen SRT:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|
+| A | 0 | 3 | 3 | 3 | 0 |
+| B | 2 | 6 | 15 | 13 | 7 |
+| C | 4 | 4 | 8 | 4 | 0 |
+| D | 6 | 5 | 20 | 14 | 9 |
+| E | 8 | 2 | 10 | 2 | 0 |
+| **Totales** | | | | **36** | **16** |
+
+* **Tiempo de Retorno Promedio:** 36 / 5 = **7.2**
+* **Tiempo de Espera Promedio:** 16 / 5 = **3.2**
+
+---
+
+### e) HRRN (Highest Response Ratio Next)
+
+Algoritmo no preemptivo. En cada punto de decisión, selecciona el proceso con la mayor relación de respuesta.
+Relación de Respuesta (RR) = (Tiempo de Espera + Tiempo de Ejecución) / Tiempo de Ejecución
+
+**Diagrama de Gantt (HRRN):**
+![image](https://github.com/user-attachments/assets/b99872be-9705-4d6f-9df3-fb9a8197e340)
+
+
+**Cálculos Detallados:**
+
+* **Tiempo 0:** Llega A (BT=3, AT=0). Solo A está disponible. CPU ejecuta A.
+* **Tiempo 0-3:** A se ejecuta y finaliza en el tiempo 3.
+    * Procesos listos al tiempo 3: B (AT=2, BT=6).
+    * **B:** WT = 3 - 2 = 1. RR = (1 + 6) / 6 = 7/6 ~ 1.167.
+    * Se selecciona B.
+* **Tiempo 3-9:** B se ejecuta y finaliza en el tiempo 9.
+    * Procesos listos al tiempo 9: C (AT=4, BT=4), D (AT=6, BT=5), E (AT=8, BT=2).
+    * **C:** WT = 9 - 4 = 5. RR = (5 + 4) / 4 = 9/4 = 2.25
+    * **D:** WT = 9 - 6 = 3. RR = (3 + 5) / 5 = 8/5 = 1.6
+    * **E:** WT = 9 - 8 = 1. RR = (1 + 2) / 2 = 3/2 = 1.5
+    * La mayor RR es de C (2.25). Se selecciona C.
+* **Tiempo 9-13:** C se ejecuta y finaliza en el tiempo 13.
+    * Procesos listos al tiempo 13: D (AT=6, BT=5), E (AT=8, BT=2).
+    * **D:** WT = 13 - 6 = 7. RR = (7 + 5) / 5 = 12/5 = 2.4
+    * **E:** WT = 13 - 8 = 5. RR = (5 + 2) / 2 = 7/2 = 3.5
+    * La mayor RR es de E (3.5). Se selecciona E.
+* **Tiempo 13-15:** E se ejecuta y finaliza en el tiempo 15.
+    * Proceso listo al tiempo 15: D (AT=6, BT=5).
+    * Se selecciona D.
+* **Tiempo 15-20:** D se ejecuta y finaliza en el tiempo 20.
+
+**Resumen HRRN:**
+
+| Proceso | Tiempo de Arribo | Tiempo de Ejecución | Tiempo de Finalización | Tiempo de Retorno | Tiempo de Espera |
+|---|---|---|---|---|---|
+| A | 0 | 3 | 3 | 3 | 0 |
+| B | 2 | 6 | 9 | 7 | 1 |
+| C | 4 | 4 | 13 | 9 | 5 |
+| D | 6 | 5 | 20 | 14 | 9 |
+| E | 8 | 2 | 15 | 7 | 5 |
+| **Totales** | | | | **40** | **20** |
+
+* **Tiempo de Retorno Promedio:** 40 / 5 = **8.0**
+* **Tiempo de Espera Promedio:** 20 / 5 = **4.0**
+
+---
+
+### Tabla Comparativa de Resultados:
+
+| Algoritmo | Tiempo de Retorno Promedio | Tiempo de Espera Promedio |
+|---|---|---|
+| **FCFS** | 8.6 | 4.6 |
+| **RR (q=3)** | 10.4 | 6.4 |
+| **RR (q=4)** | 10.0 | 6.0 |
+| **RR (q=6)** | 8.6 | 4.6 |
+| **SPN** | 8.8 | 3.6 |
+| **SRT** | **7.2** | **3.2** |
+| **HRRN** | 8.0 | 4.0 |
+
+De los algoritmos analizados, **SRT (Shortest Remaining Time)** muestra el mejor rendimiento con el menor tiempo de retorno promedio y el menor tiempo de espera promedio para este conjunto de procesos.
